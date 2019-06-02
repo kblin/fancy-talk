@@ -406,7 +406,8 @@ pub extern "C" fn free_package(package: *mut CPackage) {
     if !package.is_null() {
         unsafe {
             let c_pkg = Box::from_raw(package);
-            let _pkg = Package::from(&c_pkg);
+            free_buffer(c_pkg.query, c_pkg.query_len);
+            free_buffer(c_pkg.payload, c_pkg.payload_len);
             // and drop it
         }
     }
