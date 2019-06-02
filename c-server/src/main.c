@@ -93,6 +93,7 @@ Package *lookup_message(const struct message_list *messages, const Package *quer
 struct server_ctx {
     Package *query;
     uint8_t *buffer;
+    uintptr_t buflen;
 };
 
 int free_server_ctx(struct server_ctx *srv) {
@@ -100,7 +101,7 @@ int free_server_ctx(struct server_ctx *srv) {
         free_package(srv->query);
     }
     if (srv->buffer) {
-        free_buffer(srv->buffer);
+        free_buffer(srv->buffer, srv->buflen);
     }
 };
 
@@ -156,9 +157,9 @@ int main(const int argc, const char** argv) {
 
         response = lookup_message(messages, srv_ctx->query);
 
-        encode_package(response, &srv_ctx->buffer, &buflen);
+        encode_package(response, &srv_ctx->buffer, &srv_ctx->buflen);
 
-        buflen = sendto(sockfd, srv_ctx->buffer, buflen, 0, (struct sockaddr *)&client_addr, clientlen);
+        buflen = sendto(sockfd, srv_ctx->buffer, srv_ctx->buflen, 0, (struct sockaddr *)&client_addr, clientlen);
         if (strncmp("exit", srv_ctx->query->query, srv_ctx->query->query_len) == 0) {
             break;
         }
