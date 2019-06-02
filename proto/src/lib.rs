@@ -99,7 +99,7 @@ impl Package {
         Default::default()
     }
 
-    pub fn from(c_pkg: &CPackage) -> Self {
+    pub unsafe fn from(c_pkg: &CPackage) -> Self {
         let msg_type : MessageType = if c_pkg.message_type == 0 {
             MessageType::Query
         } else {
@@ -107,12 +107,12 @@ impl Package {
         };
         let mut query : Option<String> = None;
         if c_pkg.query_len > 0 {
-            let query_str = unsafe {::std::str::from_utf8(slice::from_raw_parts(c_pkg.query, c_pkg.query_len)).unwrap()};
+            let query_str = ::std::str::from_utf8(slice::from_raw_parts(c_pkg.query, c_pkg.query_len)).unwrap();
             query = Some(String::from(query_str));
         };
         let mut payload : Option<String> = None;
         if c_pkg.payload_len > 0 {
-            let payload_str = unsafe {::std::str::from_utf8(slice::from_raw_parts(c_pkg.payload, c_pkg.payload_len)).unwrap()};
+            let payload_str = ::std::str::from_utf8(slice::from_raw_parts(c_pkg.payload, c_pkg.payload_len)).unwrap();
             payload = Some(String::from(payload_str));
         };
         Package {
